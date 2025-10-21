@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budgeting Tools & Templates | Simple Budgeting Help</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<script>
+// Load saved data on page load
+window.onload = function() {
+  loadBudget();
+};
+
+// Calculate budget
+function calculateDetailedBudget() {
+  const income = parseFloat(document.getElementById("income").value) || 0;
+  const budgetedCells = document.querySelectorAll(".budgeted");
+  const actualCells = document.querySelectorAll(".actual");
+  const diffCells = document.querySelectorAll(".diff");
+
+  let totalBudgeted = 0;
+  let totalActual = 0;
+
+  const data = { income: income, categories: [] };
+
+  for (let i = 0; i < budgetedCells.length; i++) {
+    const category = budgetedCells[i].closest("tr").children[0].textContent;
+    const budgeted = parseFloat(budgetedCells[i].value) || 0;
+    const actual = parseFloat(actualCells[i].value) || 0;
+    const diff = budgeted - actual;
+
+    diffCells[i].textContent = diff.toFixed(2);
+    diffCells[i].style.color = diff < 0 ? "red" : "green";
+
+    totalBudgeted += budgeted;
+    totalActual += actual;
+
+    // Save data for localStorage
+    data.categories.push({ category, budgeted, actual });
+  }
+
+  const totalDiff = income - totalActual;
+
+  document.getElementById("total-budgeted").textContent = totalBudgeted.toFixed(2);
+  document.getElementById("total-actual").textContent = totalActual.toFixed(2);
+  document.getElementById("total-diff").textContent = totalDiff.toFixed(2);
+  document.getElementById("total-diff").style.color = totalDiff < 0 ? "red" : "green";
+
+  // Save everything to localStorage
+  localStorage.setItem("budgetData", JSON.stringify(data));
+}
+
+// Add a new category row
+function addCategory() {
+  const table = document.getElementById("budget-table");
+  const row = table.insertRow(table.rows.length - 1); // insert above totals
+  row.innerHTML = `
+    <td contenteditable="true">New Category</td>
+    <td><input type="number" class="budgeted" value="0"></td>
+    <td><input type="number" class="actual" value="0"></td>
+    <td class="diff">0</td>
+  `;
+}
+
+// Reset all inputs
+function resetBudget() {
+  localStorage.removeItem("budgetData");
+  document.getElementById("income").value = 0;
+  const budgetedCells = document.querySelectorAll(".budgeted");
+  const actualCells = document.querySelectorAll(".actual");
+  const diffCells = document.querySelectorAll(".diff");
+
+  for (let i = 0; i < budgetedCells.length; i++) {
+    budgetedCells[i].value = 0;
+    actualCells[i].value = 0;
+    diffCells[i].textContent = "0";
+    diffCells[i].style.color = "black";
+  }
+
+  document.getElementById("total-budgeted").textContent = "0";
+  document.getElementById("total-actual").textContent = "0";
+  document.getElementById("total-diff").textContent = "0";
+  document.getElementById("total-diff").style.color = "black";
+}
+
+// Load saved data from localStorage
+function loadBudget() {
+  const data = JSON.parse(localStorage.getItem("budgetData"));
+  if (!data) return;
+
+  document.getElementById("income").value = data.income || 0;
+  const table = document.getElementById("budget-table");
+
+  data.categories.forEach((cat, index) => {
+    // Skip totals row
+    if (index >= table.rows.length - 2) return;
+
+    const row = table.rows[index + 1]; // skip header row
+    row.children[0].textContent = cat.category;
+    row.children[1].children[0].value = cat.budgeted;
+    row.children[2].children[0].value = cat.actual;
+  });
+
+  calculateDetailedBudget();
+}
+</script>
+<body>
+
+  <header>
+    <h1>Simple Budgeting Help</h1>
+    <p>Tools & Templates to make budgeting easy.</p>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="guide.html">How to Budget</a> |
+      <a href="tools.html">Tools & Templates</a> |
+      <a href="blog.html">Tips & Articles</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Downloadable Budget Spreadsheet</h2>
+    <p>We’ve prepared a simple budgeting spreadsheet you can use to track your income, expenses, and savings. Click below to download:</p>
+    <p>Choose your preferred version:</p>
+
+    <p><a href="downloads/budget-template.xlsx" download>⬇ Download Budget Template</a></p>
+    <p><a href="https://docs.google.com/spreadsheets/d/1yafZoBKyWeqQakb5kwPdfxdwck4oIOM-sY07dMUrrrw/edit?usp=sharing" target="_blank">Open Google Sheets Version</a></p>
+
+    <section>
+      <h2>Interactive Calculator (Coming Soon)</h2>
+<section>
+  <h2>Detailed Budget Calculator</h2>
+  <p>Enter your income and expenses for each category below:</p>
+
+  <label for="income">Total Income ($): </label>
+  <input type="number" id="income" value="0"><br><br>
+
+  <table id="budget-table">
+    <tr>
+      <th>Category</th>
+      <th>Budgeted ($)</th>
+      <th>Actual ($)</th>
+      <th>Difference ($)</th>
+    </tr>
+    <!-- Initial categories -->
+    <tr>
+      <td>Housing/Rent</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Utilities</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Groceries</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Transportation</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Debt Payments</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Savings</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Entertainment</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <td>Miscellaneous</td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="diff">0</td>
+    </tr>
+    <tr>
+      <th>Totals</th>
+      <th id="total-budgeted">0</th>
+      <th id="total-actual">0</th>
+      <th id="total-diff">0</th>
+    </tr>
+  </table>
+
+  <br>
+  <button onclick="calculateDetailedBudget()">Calculate Budget</button>
+  <button onclick="resetBudget()">Reset</button>
+  <button onclick="addCategory()">+ Add Category</button>
+</section>
+    </section>
+
+    <section>
+      <h2>How to Use the Spreadsheet</h2>
+      <ol>
+        <li>Open the file in Excel or Goog
