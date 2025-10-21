@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Budgeting Tools & Templates | Simple Budgeting Help</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CGQTXEZ0VF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CGQTXEZ0VF');
+</script>
+
 </head>
 <script>
 // Load saved data on page load
@@ -48,6 +57,10 @@ function calculateDetailedBudget() {
   document.getElementById("total-diff").style.color = totalDiff < 0 ? "red" : "green";
 
   // Save everything to localStorage
+  gtag('event', 'calculator_used', {
+  'event_category': 'Tools',
+  'event_label': 'Budget Calculator'
+});
   localStorage.setItem("budgetData", JSON.stringify(data));
 }
 
@@ -123,7 +136,8 @@ function loadBudget() {
     <p>We’ve prepared a simple budgeting spreadsheet you can use to track your income, expenses, and savings. Click below to download:</p>
     <p>Choose your preferred version:</p>
 
-    <p><a href="downloads/budget-template.xlsx" download>⬇ Download Budget Template</a></p>
+    <a href="downloads/budget-template.xlsx" download onclick="gtag('event','download',{ 'event_category':'Templates', 'event_label':'Excel Template'});">
+    ⬇ Download Excel Version</a>
     <p><a href="https://docs.google.com/spreadsheets/d/1yafZoBKyWeqQakb5kwPdfxdwck4oIOM-sY07dMUrrrw/edit?usp=sharing" target="_blank">Open Google Sheets Version</a></p>
 
     <section>
